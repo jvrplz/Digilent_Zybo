@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;bluetooth/src/PmodBT2.h&apos; to &apos;Bluetooth.h&apos;" description="Rename resource &apos;PmodBT2.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/PmodBT2.h" name="Bluetooth.h" stamp="1732555635740" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;bluetooth/src/PmodBT2.c&apos; to &apos;Bluetooth.c&apos;" description="Rename resource &apos;PmodBT2.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/PmodBT2.c" name="Bluetooth.c" stamp="1732555667439" updateReferences="true"/>
+</session>
