@@ -46,7 +46,7 @@ int Init_Bluetooth(void){
 		return -1;
 	}
 
-	tid_BlueTX = xTaskCreate(Bluetooth_TransmitTask, "BT_Transmit", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 3, NULL);
+	tid_BlueTX = xTaskCreate(Bluetooth_TransmitTask, "BT_Transmit", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
 	if(tid_BlueTX != pdPASS){
 		return -1;
 	}
@@ -61,12 +61,13 @@ void Bluetooth_ReceiveTask(void *pvParameters) {
     while (1) {
         // Leer datos del Bluetooth
         n = BT2_RecvData(&myDevice, (u8 *)&bluerx.string[buf_index], 1);
-        if (n != 0) {
+        if (n > 0) {
             // Procesar datos recibidos
             if (bluerx.string[buf_index] == '\r' || bluerx.string[buf_index] == '\n') {
                 if (buf_index > 0) {
                 	bluerx.string[buf_index] = '\0'; // Terminar la cadena
                     xQueueSend(mid_Queue_RX_Blue, &bluerx, portMAX_DELAY);
+                    buf_index = 0; // Reiniciar buffer
                 }
             } else {
                 buf_index++;
@@ -74,8 +75,13 @@ void Bluetooth_ReceiveTask(void *pvParameters) {
                     buf_index = 0; // Reiniciar buffer en caso de desbordamiento
                 }
             }
+        } else {
+
+        	vTaskDelay(pdMS_TO_TICKS(10));
+
         }
-        taskYIELD();
+        //taskYIELD();
+        //suspended
     }
 }
 

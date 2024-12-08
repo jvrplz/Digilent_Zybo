@@ -24,7 +24,7 @@ int Init_ALS(void){
         return -1;
     }
 
-    tid_ALS = xTaskCreate(ALS_Task, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, &xLightTask);
+    tid_ALS = xTaskCreate(ALS_Task, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
 	if(tid_ALS != pdPASS){
 		return -1;
 	}
@@ -32,17 +32,17 @@ int Init_ALS(void){
 }
 
 void ALS_Task(void *pvParameters) {
-	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
 	ALS_begin(&ALS, XPAR_PMODALS_0_AXI_LITE_SPI_BASEADDR);
 	vTaskDelay(pdMS_TO_TICKS(100));
 
     while (1) {
+    	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         als.light = ALS_read(&ALS);
         if (xQueueSend(mid_Queue_ALS, &als, portMAX_DELAY) != pdPASS) {
             xil_printf("Error al enviar el valor a la cola\r\n");
         }
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(4000));
     }
 }
 

@@ -33,10 +33,10 @@ void PrincipalTask(void *pvParameters) {
 	MSGQUEUE_BLU_RX_t bluerx;
 	MSGQUEUE_ALS_t als;
 
-	Estado state = MODO1;
+	Estado state = MODO2;
 
-    int position = 10;
-    int enabled = 0;
+    uint8_t position = 50;
+    uint8_t enabled = 0;
 
     while (1) {
     	switch (state) {
@@ -50,12 +50,12 @@ void PrincipalTask(void *pvParameters) {
     	    case MODO2://MEDIDA PERIODICA
     	    	xTaskNotifyGive(xLightTask);
     	    	if (xQueueReceive(mid_Queue_ALS, &als, portMAX_DELAY) == pdTRUE) {
-    	    		//bluetx.string = als.light;//REVISAR ESTE MENSAJE porque no se hace así
+    	    		snprintf(bluetx.string, sizeof(bluetx.string), "%u\r\n", als.light);
     	    		xQueueSend(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY);
     	    	}
     	        break;
 
-    	    case MODO3://seria COM-PC
+    	    case MODO3://COM-PC
     	    	if (xQueueReceive(mid_Queue_RX_Blue, &bluerx, portMAX_DELAY) == pdTRUE) {
     	    		ProcessCommand(bluerx.string, bluetx.string, &enabled, &position);
     	    		xQueueSend(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY);
@@ -65,16 +65,14 @@ void PrincipalTask(void *pvParameters) {
     	    default:
     	        break;
     	}
-    	taskYIELD();
     }
 }
 
-void ProcessCommand(const char *command, char *response, int *enabled, int *position) {
+void ProcessCommand(const char *command, char *response, uint8_t *enabled, uint8_t *position) {
     size_t len = strlen(command);
 
     if (len == 1) {
         char cmd = command[0];
-
         switch (cmd) {
             case 'e':
                 *enabled = 1;
@@ -91,8 +89,6 @@ void ProcessCommand(const char *command, char *response, int *enabled, int *posi
                 if (*enabled) {
                     int delta = (cmd == '+') ? 5 : -5;
                     *position += delta;
-
-                    // Asegurar que la posición esté dentro del rango [10, 90]
                     if (*position > 90) *position = 90;
                     if (*position < 10) *position = 10;
 
@@ -105,11 +101,10 @@ void ProcessCommand(const char *command, char *response, int *enabled, int *posi
             default:
                 snprintf(response, QUEUE_ITEM_SIZE, "Mensaje incorrecto\r\n");
                 break;
-        }
 
+        }
     } else if (len == 2 && isdigit((unsigned char)command[0]) && isdigit((unsigned char)command[1])) {
         int new_position = atoi(command);
-
         if (new_position >= 10 && new_position <= 90) {
             if (*enabled) {
                 *position = new_position;
@@ -120,7 +115,6 @@ void ProcessCommand(const char *command, char *response, int *enabled, int *posi
         } else {
             snprintf(response, QUEUE_ITEM_SIZE, "Mensaje incorrecto\r\n");
         }
-
     } else {
         snprintf(response, QUEUE_ITEM_SIZE, "Mensaje incorrecto\r\n");
     }

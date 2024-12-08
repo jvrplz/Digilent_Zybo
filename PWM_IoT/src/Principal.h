@@ -17,6 +17,6 @@
 
 int Init_Principal(void);
 void PrincipalTask(void *pvParameters);
-void ProcessCommand(const char *command, char *response, int *enabled, int *position);
+void ProcessCommand(const char *command, char *response, uint8_t *enabled, uint8_t *position);
 
 #endif /* SRC_PRINCIPAL_H_ */
