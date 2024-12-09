@@ -109,24 +109,24 @@ void SwitchProcessorTask(void *pvParameters) {
                 xil_printf("Cambio detectado en los switches: 0x%08X\r\n", receivedState);
 
                 if ((receivedState & 0x01) && !(previousState & 0x01)) {
-                    xil_printf("Switch 1 activado\r\n");
+                    xil_printf("Switch 0 activado\r\n");
                 } else if (!(receivedState & 0x01) && (previousState & 0x01)) {
-                    xil_printf("Switch 1 desactivado\r\n");
+                    xil_printf("Switch 0 desactivado\r\n");
                 }
                 if ((receivedState & 0x02) && !(previousState & 0x02)) {
-                    xil_printf("Switch 2 activado\r\n");
+                    xil_printf("Switch 1 activado\r\n");
                 } else if (!(receivedState & 0x02) && (previousState & 0x02)) {
-                    xil_printf("Switch 2 desactivado\r\n");
+                    xil_printf("Switch 1 desactivado\r\n");
                 }
                 if ((receivedState & 0x04) && !(previousState & 0x04)) {
-                    xil_printf("Switch 3 activado\r\n");
+                    xil_printf("Switch 2 activado\r\n");
                 } else if (!(receivedState & 0x04) && (previousState & 0x04)) {
-                    xil_printf("Switch 3 desactivado\r\n");
+                    xil_printf("Switch 2 desactivado\r\n");
                 }
                 if ((receivedState & 0x08) && !(previousState & 0x08)) {
-                    xil_printf("Switch 4 activado\r\n");
+                    xil_printf("Switch 3 activado\r\n");
                 } else if (!(receivedState & 0x08) && (previousState & 0x08)) {
-                    xil_printf("Switch 4 desactivado\r\n");
+                    xil_printf("Switch 3 desactivado\r\n");
                 }
                 previousState = receivedState;
             }
