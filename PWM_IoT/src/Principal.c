@@ -1,3 +1,9 @@
+/*------------------------------------------------------------------------------
+ *      Módulo Principal: Tarea que se encarga de coordinar todas las demás.
+ *      Es el módulo que decide las acciones a tomar en función del estado del
+ *		sistema y de la información que reciba del resto de los módulos
+ *-----------------------------------------------------------------------------*/
+
 #include "Principal.h"
 #include "FreeRTOS.h"
 #include "task.h"

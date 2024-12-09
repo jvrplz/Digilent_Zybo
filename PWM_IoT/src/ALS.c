@@ -1,3 +1,9 @@
+/*------------------------------------------------------------------------------
+ *      Módulo ALS: Tarea que se encarga de la lectura periódica de la luminosidad
+ *      proporcionada por el sensor PmodALS. Una vez realizada la lectura,
+ *      encola su valor al módulo principal
+ *-----------------------------------------------------------------------------*/
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"

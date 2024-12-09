@@ -1,3 +1,8 @@
+/*------------------------------------------------------------------------------
+ *      Módulo SW: Cada vez que se detecta una activación de un switch
+ *      se envía un mensaje a una cola con información del switch pulsado
+ *-----------------------------------------------------------------------------*/
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"

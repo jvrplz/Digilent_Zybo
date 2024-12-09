@@ -1,3 +1,9 @@
+/*------------------------------------------------------------------------------
+ *      Módulo COM: módulo encargado de la comunicación con el PC a través de
+ *      la línea RS232 integrada en el USB o la comunicación con un terminal
+ *      Bluetooth instalado en un dispositivo móvil
+ *-----------------------------------------------------------------------------*/
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
