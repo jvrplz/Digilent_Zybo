@@ -8,7 +8,7 @@ XSpi_Config XSpi_ALSConfig ={0, 0, 1, 0, 1, 8, 0, 0, 0, 0, 0};
 PmodALS ALS;
 TaskHandle_t xLightTask;
 
-void ALS_Task(void *pvParameters);
+void ALSTask(void *pvParameters);
 
 BaseType_t tid_ALS;
 
@@ -24,14 +24,14 @@ int Init_ALS(void){
         return -1;
     }
 
-    tid_ALS = xTaskCreate(ALS_Task, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
+    tid_ALS = xTaskCreate(ALSTask, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
 	if(tid_ALS != pdPASS){
 		return -1;
 	}
     return 0;
 }
 
-void ALS_Task(void *pvParameters) {
+void ALSTask(void *pvParameters) {
 
 	ALS_begin(&ALS, XPAR_PMODALS_0_AXI_LITE_SPI_BASEADDR);
 	vTaskDelay(pdMS_TO_TICKS(100));

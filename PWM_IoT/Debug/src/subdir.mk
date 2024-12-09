@@ -10,19 +10,22 @@ C_SRCS += \
 ../src/ALS.c \
 ../src/Bluetooth.c \
 ../src/Principal.c \
-../src/main.c 
+../src/main.c \
+../src/sw.c 
 
 OBJS += \
 ./src/ALS.o \
 ./src/Bluetooth.o \
 ./src/Principal.o \
-./src/main.o 
+./src/main.o \
+./src/sw.o 
 
 C_DEPS += \
 ./src/ALS.d \
 ./src/Bluetooth.d \
 ./src/Principal.d \
-./src/main.d 
+./src/main.d \
+./src/sw.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
