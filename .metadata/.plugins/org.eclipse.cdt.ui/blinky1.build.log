@@ -1,8 +1,39 @@
-11:01:05 **** Incremental Build of configuration Debug for project blinky1 ****
+16:28:02 **** Build of configuration Debug for project blinky1 ****
 make pre-build main-build 
 a9-linaro-pre-build-step
 ' '
-make: Nothing to be done for 'main-build'.
+'Building file: ../src/helloworld.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/helloworld.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../my_base0/ps7_cortexa9_0/include -MMD -MP -MF"src/helloworld.d" -MT"src/helloworld.o" -o "src/helloworld.o" "../src/helloworld.c"
+In file included from ../../my_base0/ps7_cortexa9_0/include/xil_printf.h:12,
+                 from ../src/helloworld.c:50:
+../../my_base0/ps7_cortexa9_0/include/xparameters.h:307:40: warning: initialization of 'unsigned char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+ #define XPAR_PWM_IP_0_S00_AXI_BASEADDR 0x43C00000
+                                        ^~~~~~~~~~
+../src/helloworld.c:54:18: note: in expansion of macro 'XPAR_PWM_IP_0_S00_AXI_BASEADDR'
+ #define PWM_ADDR XPAR_PWM_IP_0_S00_AXI_BASEADDR
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../src/helloworld.c:57:26: note: in expansion of macro 'PWM_ADDR'
+ unsigned char *PWM_REG = PWM_ADDR;
+                          ^~~~~~~~
+'Finished building: ../src/helloworld.c'
+' '
+'Building file: ../src/platform.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/platform.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../my_base0/ps7_cortexa9_0/include -MMD -MP -MF"src/platform.d" -MT"src/platform.o" -o "src/platform.o" "../src/platform.c"
+'Finished building: ../src/platform.c'
+' '
+'Building target: blinky1.elf'
+'Invoking: ARM v7 gcc linker'
+arm-none-eabi-gcc -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -L../../my_base0/ps7_cortexa9_0/lib -o "blinky1.elf"  ./src/helloworld.o ./src/platform.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: blinky1.elf'
+' '
+'Invoking: ARM v7 Print Size'
+arm-none-eabi-size blinky1.elf  |tee "blinky1.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  19132	   1144	  22568	  42844	   a75c	blinky1.elf
+'Finished building: blinky1.elf.size'
+' '
 
-11:01:06 Build Finished (took 151ms)
+16:28:03 Build Finished (took 907ms)
 
