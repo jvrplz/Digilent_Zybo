@@ -7,32 +7,23 @@ LD_SRCS += \
 ../src/lscript.ld 
 
 C_SRCS += \
-../src/ALS.c \
-../src/Bluetooth.c \
-../src/Principal.c \
 ../src/main.c \
-../src/sw.c 
+../src/platform.c 
 
 OBJS += \
-./src/ALS.o \
-./src/Bluetooth.o \
-./src/Principal.o \
 ./src/main.o \
-./src/sw.o 
+./src/platform.o 
 
 C_DEPS += \
-./src/ALS.d \
-./src/Bluetooth.d \
-./src/Principal.d \
 ./src/main.d \
-./src/sw.d 
+./src/platform.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM v7 gcc compiler'
-	arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"$@" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../my_base_os0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"$@" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../my_base0/ps7_cortexa9_0/include -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

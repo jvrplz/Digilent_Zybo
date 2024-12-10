@@ -1,3 +1,9 @@
+/*------------------------------------------------------------------------------
+ *      Módulo ALS: Tarea que se encarga de la lectura periódica de la luminosidad
+ *      proporcionada por el sensor PmodALS. Una vez realizada la lectura,
+ *      encola su valor al módulo principal
+ *-----------------------------------------------------------------------------*/
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -8,7 +14,7 @@ XSpi_Config XSpi_ALSConfig ={0, 0, 1, 0, 1, 8, 0, 0, 0, 0, 0};
 PmodALS ALS;
 TaskHandle_t xLightTask;
 
-void ALS_Task(void *pvParameters);
+void ALSTask(void *pvParameters);
 
 BaseType_t tid_ALS;
 
@@ -24,25 +30,25 @@ int Init_ALS(void){
         return -1;
     }
 
-    tid_ALS = xTaskCreate(ALS_Task, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, &xLightTask);
+    tid_ALS = xTaskCreate(ALSTask, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
 	if(tid_ALS != pdPASS){
 		return -1;
 	}
     return 0;
 }
 
-void ALS_Task(void *pvParameters) {
-	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+void ALSTask(void *pvParameters) {
 
 	ALS_begin(&ALS, XPAR_PMODALS_0_AXI_LITE_SPI_BASEADDR);
 	vTaskDelay(pdMS_TO_TICKS(100));
 
     while (1) {
+    	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         als.light = ALS_read(&ALS);
         if (xQueueSend(mid_Queue_ALS, &als, portMAX_DELAY) != pdPASS) {
             xil_printf("Error al enviar el valor a la cola\r\n");
         }
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(4000));
     }
 }
 

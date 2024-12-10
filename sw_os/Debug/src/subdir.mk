@@ -7,25 +7,13 @@ LD_SRCS += \
 ../src/lscript.ld 
 
 C_SRCS += \
-../src/ALS.c \
-../src/Bluetooth.c \
-../src/Principal.c \
-../src/main.c \
-../src/sw.c 
+../src/freertos_hello_world.c 
 
 OBJS += \
-./src/ALS.o \
-./src/Bluetooth.o \
-./src/Principal.o \
-./src/main.o \
-./src/sw.o 
+./src/freertos_hello_world.o 
 
 C_DEPS += \
-./src/ALS.d \
-./src/Bluetooth.d \
-./src/Principal.d \
-./src/main.d \
-./src/sw.d 
+./src/freertos_hello_world.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

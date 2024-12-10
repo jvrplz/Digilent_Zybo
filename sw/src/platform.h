@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2009 - 2014 Xilinx, Inc.  All rights reserved.
+* Copyright (C) 2008 - 2014 Xilinx, Inc.  All rights reserved.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -30,15 +30,12 @@
 *
 ******************************************************************************/
 
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "Principal.h"
+#ifndef __PLATFORM_H_
+#define __PLATFORM_H_
 
-int main(void) {
-	Init_Principal();
-	vTaskStartScheduler();
+#include "platform_config.h"
 
-    while (1);
-    return 0;
-}
+void init_platform();
+void cleanup_platform();
+
+#endif
