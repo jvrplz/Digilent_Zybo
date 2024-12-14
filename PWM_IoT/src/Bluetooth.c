@@ -28,22 +28,32 @@ SysUart myUart;
 
 void Bluetooth_ReceiveTask(void *pvParameters);
 void Bluetooth_TransmitTask(void *pvParameters);
+void Pc_ReceiveTask(void *pvParameters);
+void Pc_TransmitTask(void *pvParameters);
 
 BaseType_t tid_BlueRX;
 BaseType_t tid_BlueTX;
+BaseType_t tid_PCRX;
+BaseType_t tid_PCTX;
 
 QueueHandle_t mid_Queue_TX_Blue;
 QueueHandle_t mid_Queue_RX_Blue;
+QueueHandle_t mid_Queue_TX_Pc;
+QueueHandle_t mid_Queue_RX_Pc;
 
 MSGQUEUE_BLU_TX_t bluetx;
 MSGQUEUE_BLU_RX_t bluerx;
+MSGQUEUE_BLU_TX_t pctx;
+MSGQUEUE_BLU_RX_t pcrx;
 
 int Init_Bluetooth(void){
 	mid_Queue_TX_Blue = xQueueCreate(QUEUE_LENGTH, sizeof(MSGQUEUE_BLU_TX_t));
 	mid_Queue_RX_Blue = xQueueCreate(QUEUE_LENGTH, sizeof(MSGQUEUE_BLU_RX_t));
+	mid_Queue_TX_Pc = xQueueCreate(QUEUE_LENGTH, sizeof(MSGQUEUE_PC_TX_t));
+	mid_Queue_RX_Pc = xQueueCreate(QUEUE_LENGTH, sizeof(MSGQUEUE_PC_RX_t));
 
-    if (mid_Queue_TX_Blue == NULL || mid_Queue_RX_Blue == NULL) {
-        xil_printf("Error al crear las colas bluetooth\r\n");
+    if (mid_Queue_TX_Blue == NULL || mid_Queue_RX_Blue == NULL || mid_Queue_TX_Pc == NULL || mid_Queue_RX_Pc == NULL) {
+        xil_printf("Error al crear las colas coms\r\n");
         return -1;
     }
 
@@ -56,6 +66,16 @@ int Init_Bluetooth(void){
 	if(tid_BlueTX != pdPASS){
 		return -1;
 	}
+
+	tid_PCRX = xTaskCreate(Pc_ReceiveTask, "PC_Receive", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
+	if(tid_PCRX != pdPASS){
+		return -1;
+	}
+
+	tid_PCTX = xTaskCreate(Pc_TransmitTask, "PC_Transmit", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, NULL);
+	if(tid_PCTX != pdPASS){
+		return -1;
+	}
     return 0;
 }
 
@@ -65,7 +85,6 @@ void Bluetooth_ReceiveTask(void *pvParameters) {
     Bluetooth_Initialize();
 
     while (1) {
-        // Leer datos del Bluetooth
         n = BT2_RecvData(&myDevice, (u8 *)&bluerx.string[buf_index], 1);
         if (n > 0) {
             // Procesar datos recibidos
@@ -82,9 +101,7 @@ void Bluetooth_ReceiveTask(void *pvParameters) {
                 }
             }
         } else {
-
         	vTaskDelay(pdMS_TO_TICKS(10));
-
         }
         //taskYIELD();
         //suspended
@@ -93,15 +110,55 @@ void Bluetooth_ReceiveTask(void *pvParameters) {
 
 void Bluetooth_TransmitTask(void *pvParameters) {
 	Bluetooth_Initialize();
-	xil_printf("\r\nConexion Bluetooth establecida\r\n");
+	//xil_printf("\r\nConexion Bluetooth establecida\r\n");
     while (1) {
         if (xQueueReceive(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY)) {
-            SendInChunks(&myDevice, bluetx.string); // Envia el mensaje en partes
+            SendInChunksBL(bluetx.string); // Envia el mensaje en partes
         }
     	taskYIELD();
     }
 }
 
+void Pc_ReceiveTask(void *pvParameters) {
+    int n;
+    int buf_index = 0;
+    SysUartInit();
+
+    while (1) {
+        n = SysUart_Recv(&myUart, (u8 *)&pcrx.string[buf_index], 1);
+        if (n > 0) {
+            // Procesar datos recibidos
+            if (pcrx.string[buf_index] == '\r' || pcrx.string[buf_index] == '\n') {
+                if (buf_index > 0) {
+                	pcrx.string[buf_index] = '\0'; // Terminar la cadena
+                    xQueueSend(mid_Queue_RX_Pc, &pcrx, portMAX_DELAY);
+                    buf_index = 0; // Reiniciar buffer
+                }
+            } else {
+                buf_index++;
+                if (buf_index >= QUEUE_ITEM_SIZE) {
+                    buf_index = 0; // Reiniciar buffer en caso de desbordamiento
+                }
+            }
+        } else {
+        	vTaskDelay(pdMS_TO_TICKS(10));
+        }
+        //taskYIELD();
+        //suspended
+    }
+
+}
+
+void Pc_TransmitTask(void *pvParameters) {
+	SysUartInit();
+	//xil_printf("\r\nConexion Serie establecida\r\n");
+    while (1) {
+        if (xQueueReceive(mid_Queue_TX_Pc, &pctx, portMAX_DELAY)) {
+            SendInChunksPC(pctx.string); // Envia el mensaje en partes
+        }
+    	taskYIELD();
+    }
+}
 void SysUartInit() {
     XUartPs_Config *myUartCfgPtr;
     myUartCfgPtr = XUartPs_LookupConfig(SYS_UART_DEVICE_ID);
@@ -113,16 +170,28 @@ void Bluetooth_Initialize() {
     BT2_Begin(&myDevice, XPAR_PMODBT2_0_AXI_LITE_GPIO_BASEADDR, XPAR_PMODBT2_0_AXI_LITE_UART_BASEADDR, BT2_UART_AXI_CLOCK_FREQ, 115200);
 }
 
-// Función para enviar en fragmentos de 16 bytes
-void SendInChunks(PmodBT2 *InstancePtr, const char *message) {
+
+void SendInChunksBL(const char *message) {
     size_t len = strlen(message);
     size_t sent = 0;
 
     while (sent < len) {
-        size_t chunk_size = (len - sent > 16) ? 16 : (len - sent); // Máximo 16 bytes por fragmento
-        BT2_SendData(InstancePtr, (u8 *)(message + sent), chunk_size);
+        size_t chunk_size = (len - sent > 16) ? 16 : (len - sent);
+        BT2_SendData(&myDevice, (u8 *)(message + sent), chunk_size);
         sent += chunk_size;
-        vTaskDelay(pdMS_TO_TICKS(10)); // Retardo entre fragmentos
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+void SendInChunksPC(const char *message) {
+    size_t len = strlen(message);
+    size_t sent = 0;
+
+    while (sent < len) {
+        size_t chunk_size = (len - sent > 16) ? 16 : (len - sent);
+        SysUart_Send(&myUart, (u8 *)(message + sent), chunk_size);
+        sent += chunk_size;
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 

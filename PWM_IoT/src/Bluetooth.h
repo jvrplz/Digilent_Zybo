@@ -5,8 +5,8 @@
 #include "xstatus.h"
 #include "xuartns550.h"
 
-#define QUEUE_LENGTH 4
-#define QUEUE_ITEM_SIZE 32
+#define QUEUE_LENGTH 2
+#define QUEUE_ITEM_SIZE 24
 
 typedef struct PmodBT2 {
     u32 AXI_ClockFreq;
@@ -22,8 +22,19 @@ typedef struct {
 	char string[QUEUE_ITEM_SIZE];
 } MSGQUEUE_BLU_RX_t;
 
+typedef struct {
+	char string[QUEUE_ITEM_SIZE];
+} MSGQUEUE_PC_TX_t;
+
+typedef struct {
+	char string[QUEUE_ITEM_SIZE];
+} MSGQUEUE_PC_RX_t;
+
+
 extern QueueHandle_t mid_Queue_TX_Blue;
 extern QueueHandle_t mid_Queue_RX_Blue;
+extern QueueHandle_t mid_Queue_TX_Pc;
+extern QueueHandle_t mid_Queue_RX_Pc;
 
 int Init_Bluetooth(void);
 
@@ -33,7 +44,8 @@ int BT2_SendData(PmodBT2 *InstancePtr, u8 *Data, int nData);
 void BT2_ChangeBaud(PmodBT2 *InstancePtr, int baud);
 void SysUartInit();
 void Bluetooth_Initialize();
-void SendInChunks(PmodBT2 *InstancePtr, const char *message);
+void SendInChunksBL(const char *message);
+void SendInChunksPC(const char *message);
 
 
 #endif // BLUETOOTH_H

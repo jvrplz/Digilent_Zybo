@@ -36,7 +36,7 @@ int Init_sw(void){
         return -1;
     }
 
-    tid_sw = xTaskCreate(swTask, "SW_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+    tid_sw = xTaskCreate(swTask, "SW_Task", 128, NULL, tskIDLE_PRIORITY+1, NULL);
 	if(tid_sw != pdPASS){
 		return -1;
 	}

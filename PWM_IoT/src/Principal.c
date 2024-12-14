@@ -18,7 +18,8 @@ BaseType_t tid_Principal;
 typedef enum {
     MODO1,
 	MODO2,
-	MODO3
+	MODO3,
+	COLOR
 } Estado;
 
 char almacen[QUEUE_ITEM_SIZE];
@@ -39,6 +40,8 @@ int Init_Principal(){
 void PrincipalTask(void *pvParameters) {
 	MSGQUEUE_BLU_TX_t bluetx;
 	MSGQUEUE_BLU_RX_t bluerx;
+	MSGQUEUE_PC_TX_t pctx;
+	MSGQUEUE_PC_RX_t pcrx;
 	MSGQUEUE_ALS_t als;
 	MSGQUEUE_SW_t sw;
 
@@ -47,6 +50,7 @@ void PrincipalTask(void *pvParameters) {
     uint8_t position = 50;
     uint8_t enabled = 0;
     uint16_t aux_sw = 0;
+    //Dormir tareas innecesarias
 
     while (1) {
 
@@ -60,10 +64,17 @@ void PrincipalTask(void *pvParameters) {
     	    	if (xQueueReceive(mid_Queue_RX_Blue, &bluerx, 0) == pdTRUE) {
     	    		ProcessCommand(bluerx.string, bluetx.string, &enabled, &position);
     	    		xQueueSend(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY);
+    	    		if(enabled){
+    	    			xil_printf("%d\r\n", position);
+    	    		}
     	    	}
+    	    	//setear pwm
 
     	    	if (aux_sw == SW0){
-    	    		state = MODO2;
+    	    		//state = COLOR;
+    	    	}
+    	    	if (aux_sw == SW3){
+    	    		state = MODO3;
     	    	}
     	        break;
 
@@ -73,17 +84,30 @@ void PrincipalTask(void *pvParameters) {
     	    		snprintf(bluetx.string, sizeof(bluetx.string), "%u\r\n", als.light);
     	    		xQueueSend(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY);
     	    	}
+    	    	//Setear pwm
+    	    	if (aux_sw == SW0){
+    	    		state = COLOR;
+    	    	}
     	    	if (aux_sw == SW3){
     	    		state = MODO3;
     	    	}
     	        break;
 
     	    case MODO3://COM-PC
-    	    	if (xQueueReceive(mid_Queue_RX_Blue, &bluerx, 0) == pdTRUE) {
-    	    		ProcessCommand(bluerx.string, bluetx.string, &enabled, &position);
-    	    		xQueueSend(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY);
+    	    	if (xQueueReceive(mid_Queue_RX_Pc, &pcrx, 0) == pdTRUE) {
+    	    		ProcessCommand(pcrx.string, pctx.string, &enabled, &position);
+    	    		xQueueSend(mid_Queue_TX_Pc, &pctx, portMAX_DELAY);
     	    	}
+    	    	if (aux_sw == SW0){
+    	    		state = COLOR;
+    	    	}
+    	    	//setear pwm
     	        break;
+    	    case COLOR:
+    	    	//Lógica
+    	    	// if recieve, en función del rgb obtenido cambia de modo
+    	    	//por ejemplo R1 G2 B3
+    	    	break;
 
     	    default:
     	        break;
@@ -115,7 +139,7 @@ void ProcessCommand(const char *command, char *response, uint8_t *enabled, uint8
                     if (*position > 90) *position = 90;
                     if (*position < 10) *position = 10;
 
-                    snprintf(response, QUEUE_ITEM_SIZE, "Posición actual = %d\r\n", *position);
+                    snprintf(response, QUEUE_ITEM_SIZE, "Posicion actual = %d\r\n", *position);
                 } else {
                     snprintf(response, QUEUE_ITEM_SIZE, "Sistema inhabilitado\r\n");
                 }
@@ -131,7 +155,7 @@ void ProcessCommand(const char *command, char *response, uint8_t *enabled, uint8
         if (new_position >= 10 && new_position <= 90) {
             if (*enabled) {
                 *position = new_position;
-                snprintf(response, QUEUE_ITEM_SIZE, "Posición actual = %d\r\n", *position);
+                snprintf(response, QUEUE_ITEM_SIZE, "Posicion actual = %d\r\n", *position);
             } else {
                 snprintf(response, QUEUE_ITEM_SIZE, "Sistema inhabilitado\r\n");
             }
