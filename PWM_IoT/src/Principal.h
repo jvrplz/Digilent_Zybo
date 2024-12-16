@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define QUEUE_LENGTH 4
+#define QUEUE_LENGTH 2
 #define QUEUE_ITEM_SIZE 32
 
 int Init_Principal(void);

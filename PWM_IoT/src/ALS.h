@@ -6,9 +6,6 @@
 #include "xspi_l.h"
 #include "xstatus.h"
 
-#define QUEUE_LENGTH 4
-#define QUEUE_ITEM_SIZE 32
-
 typedef struct PmodALS {
    XSpi ALSSpi;
 } PmodALS;

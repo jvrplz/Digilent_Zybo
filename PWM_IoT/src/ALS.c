@@ -9,6 +9,9 @@
 #include "queue.h"
 #include "ALS.h"
 
+#define QUEUE_LENGTH 2
+#define QUEUE_ITEM_SIZE 16
+
 XSpi_Config XSpi_ALSConfig ={0, 0, 1, 0, 1, 8, 0, 0, 0, 0, 0};
 
 PmodALS ALS;
@@ -30,7 +33,7 @@ int Init_ALS(void){
         return -1;
     }
 
-    tid_ALS = xTaskCreate(ALSTask, "ALS_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
+    tid_ALS = xTaskCreate(ALSTask, "ALS_Task", 128, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
 	if(tid_ALS != pdPASS){
 		return -1;
 	}
@@ -41,9 +44,10 @@ void ALSTask(void *pvParameters) {
 
 	ALS_begin(&ALS, XPAR_PMODALS_0_AXI_LITE_SPI_BASEADDR);
 	vTaskDelay(pdMS_TO_TICKS(100));
+	als.light = ALS_read(&ALS);
+	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
     while (1) {
-    	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         als.light = ALS_read(&ALS);
         if (xQueueSend(mid_Queue_ALS, &als, portMAX_DELAY) != pdPASS) {
             xil_printf("Error al enviar el valor a la cola\r\n");

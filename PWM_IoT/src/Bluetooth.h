@@ -6,7 +6,7 @@
 #include "xuartns550.h"
 
 #define QUEUE_LENGTH 2
-#define QUEUE_ITEM_SIZE 24
+#define QUEUE_ITEM_SIZE 32
 
 typedef struct PmodBT2 {
     u32 AXI_ClockFreq;

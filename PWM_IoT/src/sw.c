@@ -11,6 +11,9 @@
 #include <stdio.h>
 #include <xgpio.h>
 
+#define QUEUE_LENGTH 2
+#define QUEUE_ITEM_SIZE 16
+
 /* Definitions for peripheral AXI_GPIO_0 */
 #define SWITCHES_DEVICE_ID XPAR_AXI_GPIO_0_DEVICE_ID
 #define XPAR_AXI_GPIO_0_BASEADDR 0x41200000

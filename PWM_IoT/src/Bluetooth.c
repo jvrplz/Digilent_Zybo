@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *      Módulo COM: módulo encargado de la comunicación con el PC a través de
- *      la línea RS232 integrada en el USB o la comunicación con un terminal
+ *      la línea serie integrada en el USB o la comunicación con un terminal
  *      Bluetooth instalado en un dispositivo móvil
  *-----------------------------------------------------------------------------*/
 
@@ -16,6 +16,7 @@
 #include "xil_cache.h"
 #include "xuartps.h"
 typedef XUartPs SysUart;
+
 #define SysUart_Send            XUartPs_Send
 #define SysUart_Recv            XUartPs_Recv
 #define SYS_UART_DEVICE_ID      XPAR_PS7_UART_1_DEVICE_ID
