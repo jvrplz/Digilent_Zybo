@@ -1,4 +1,4 @@
-16:28:00 **** Build of configuration Debug for project bluetooth ****
+19:41:59 **** Build of configuration Debug for project bluetooth ****
 make pre-build main-build 
 a9-linaro-pre-build-step
 ' '
@@ -29,5 +29,5 @@ arm-none-eabi-size bluetooth.elf  |tee "bluetooth.elf.size"
 'Finished building: bluetooth.elf.size'
 ' '
 
-16:28:02 Build Finished (took 1s.172ms)
+19:42:01 Build Finished (took 1s.574ms)
 

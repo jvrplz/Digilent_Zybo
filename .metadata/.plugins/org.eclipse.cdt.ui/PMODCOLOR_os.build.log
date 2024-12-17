@@ -1,0 +1,15 @@
+19:41:57 **** Build of configuration Debug for project PMODCOLOR_os ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/freertos_hello_world.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/freertos_hello_world.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../freertos_os_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/freertos_hello_world.d" -MT"src/freertos_hello_world.o" -o "src/freertos_hello_world.o" "../src/freertos_hello_world.c"
+../src/freertos_hello_world.c:1:10: fatal error: FreeRTOS.h: No such file or directory
+ #include "FreeRTOS.h"
+          ^~~~~~~~~~~~
+compilation terminated.
+make: *** [src/subdir.mk:23: src/freertos_hello_world.o] Error 1
+
+19:41:57 Build Finished (took 369ms)
+

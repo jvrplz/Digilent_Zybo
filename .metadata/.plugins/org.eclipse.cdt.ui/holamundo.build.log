@@ -1,4 +1,4 @@
-16:27:59 **** Build of configuration Debug for project holamundo ****
+19:41:58 **** Build of configuration Debug for project holamundo ****
 make pre-build main-build 
 a9-linaro-pre-build-step
 ' '
@@ -24,5 +24,5 @@ arm-none-eabi-size holamundo.elf  |tee "holamundo.elf.size"
 'Finished building: holamundo.elf.size'
 ' '
 
-16:28:00 Build Finished (took 916ms)
+19:41:59 Build Finished (took 1s.579ms)
 

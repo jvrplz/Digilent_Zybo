@@ -11,6 +11,7 @@
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1732354838556"/>
     <persistedState key="show_in_time" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;show_in_time/>"/>
     <tags>topLevel</tags>
+    <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_jAF1wKwDEe-MxLHJkDgpfA" selectedElement="_jAF1wawDEe-MxLHJkDgpfA" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_jAF1wawDEe-MxLHJkDgpfA" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_jAF1wqwDEe-MxLHJkDgpfA">
         <children xsi:type="advanced:Perspective" xmi:id="_jAF1wqwDEe-MxLHJkDgpfA" elementId="org.eclipse.cdt.ui.CPerspective" selectedElement="_jAF1w6wDEe-MxLHJkDgpfA" label="C/C++" iconURI="platform:/plugin/org.eclipse.cdt.ui/icons/view16/c_pers.gif" tooltip="C/C++">
@@ -226,7 +227,7 @@
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
         <children xsi:type="basic:Part" xmi:id="_jAF3EawDEe-MxLHJkDgpfA" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Bluetooth.h" iconURI="platform:/plugin/org.eclipse.cdt.ui/icons/obj16/c_file_obj.gif" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.cdt.ui.editor.CEditor&quot; name=&quot;Bluetooth.h&quot; partName=&quot;Bluetooth.h&quot; title=&quot;Bluetooth.h&quot; tooltip=&quot;bluetooth/src/Bluetooth.h&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/bluetooth/src/Bluetooth.h&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;2376&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.cdt.ui.editor.CEditor&quot; name=&quot;Bluetooth.h&quot; partName=&quot;Bluetooth.h&quot; title=&quot;Bluetooth.h&quot; tooltip=&quot;bluetooth/src/Bluetooth.h&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/bluetooth/src/Bluetooth.h&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;1890&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>org.eclipse.cdt.ui.editor.CEditor</tags>
           <tags>removeOnHide</tags>
@@ -678,7 +679,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_jAF4CawDEe-MxLHJkDgpfA" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_W4S7ELPmEe-BH7IpevF7Vg" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_jAHE1qwDEe-MxLHJkDgpfA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_r4upsLvCEe-Klfod4eo_Fw" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_jAHE1qwDEe-MxLHJkDgpfA"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_jAF4GawDEe-MxLHJkDgpfA" elementId="additions" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -702,7 +703,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_jAF4b6wDEe-MxLHJkDgpfA" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_W4UwQLPmEe-BH7IpevF7Vg" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_jAHEUqwDEe-MxLHJkDgpfA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_r4xF8LvCEe-Klfod4eo_Fw" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_jAHEUqwDEe-MxLHJkDgpfA"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_jAF4eqwDEe-MxLHJkDgpfA" elementId="group.editor" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -2630,6 +2631,9 @@
   <addons xmi:id="_dpyC0bJuEe-xNbhsJ47RLQ" elementId="com.xilinx.sdk.targetmanager.ui.addon.view" contributionURI="bundleclass://com.xilinx.sdk.targetmanager.ui/com.xilinx.sdk.targetmanager.ui.ViewVisibilityAdapterAddon"/>
   <addons xmi:id="_NDTy8LPmEe-C1IOnQxgiWQ" elementId="com.xilinx.sdk.targetmanager.ui.addon.view" contributionURI="bundleclass://com.xilinx.sdk.targetmanager.ui/com.xilinx.sdk.targetmanager.ui.ViewVisibilityAdapterAddon"/>
   <addons xmi:id="_WtmG8bPmEe-BH7IpevF7Vg" elementId="com.xilinx.sdk.targetmanager.ui.addon.view" contributionURI="bundleclass://com.xilinx.sdk.targetmanager.ui/com.xilinx.sdk.targetmanager.ui.ViewVisibilityAdapterAddon"/>
+  <addons xmi:id="_CrTp8bfvEe-ErN2bisjGRg" elementId="com.xilinx.sdk.targetmanager.ui.addon.view" contributionURI="bundleclass://com.xilinx.sdk.targetmanager.ui/com.xilinx.sdk.targetmanager.ui.ViewVisibilityAdapterAddon"/>
+  <addons xmi:id="_em81cbfvEe-xhvn-jRAuYA" elementId="com.xilinx.sdk.targetmanager.ui.addon.view" contributionURI="bundleclass://com.xilinx.sdk.targetmanager.ui/com.xilinx.sdk.targetmanager.ui.ViewVisibilityAdapterAddon"/>
+  <addons xmi:id="_ro8hQbvCEe-Klfod4eo_Fw" elementId="com.xilinx.sdk.targetmanager.ui.addon.view" contributionURI="bundleclass://com.xilinx.sdk.targetmanager.ui/com.xilinx.sdk.targetmanager.ui.ViewVisibilityAdapterAddon"/>
   <categories xmi:id="_jAHGJKwDEe-MxLHJkDgpfA" elementId="org.eclipse.team.ui.category.team" name="Team" description="Actions that apply when working with a Team"/>
   <categories xmi:id="_jAHGJawDEe-MxLHJkDgpfA" elementId="org.eclipse.ui.category.views" name="Views" description="Commands for opening views"/>
   <categories xmi:id="_jAHGJqwDEe-MxLHJkDgpfA" elementId="org.eclipse.ui.category.edit" name="Edit"/>
