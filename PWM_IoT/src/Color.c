@@ -7,102 +7,112 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "color.h"
 #include "PmodCOLOR.h"
 #include "sleep.h"
-#include "xil_cache.h"
+#include "xil_printf.h"
 #include "xparameters.h"
 
-#define QUEUE_LENGTH 2
-#define QUEUE_ITEM_SIZE sizeof(COLOR_Data)
+#define QUEUE_LENGTH 1
+#define QUEUE_ITEM_SIZE 16
 
-/* Configuración e instancias */
-PmodCOLOR COLOR;
+#define COLOR_RegATIME  0x01
+#define COLOR_RegCONTROL 0x0F
+
+#define ATIME_600MS 0x06
+#define GAIN_60X 0x03
+
+PmodCOLOR myColorDevice;
 TaskHandle_t xColorTask;
+
+void ColorTask(void *pvParameters);
+
 QueueHandle_t mid_Queue_COLOR;
 
-void COLORTask(void *pvParameters);
+MSGQUEUE_COLOR_t color;
 
-typedef struct {
-   COLOR_Data min, max;
-} CalibrationData;
-
-/* Variables globales */
-BaseType_t tid_COLOR;
-CalibrationData calib;
-COLOR_Data colorData;
-
-/* Prototipos de funciones */
-int Init_Color(void);
-CalibrationData COLOR_InitCalibrationData(COLOR_Data firstSample);
-void COLOR_Calibrate(COLOR_Data newSample, CalibrationData *calib);
-COLOR_Data COLOR_NormalizeToCalibration(COLOR_Data sample, CalibrationData calib);
-
-/* Inicialización del módulo COLOR */
 int Init_Color(void) {
-    mid_Queue_COLOR = xQueueCreate(QUEUE_LENGTH, QUEUE_ITEM_SIZE);
+	mid_Queue_COLOR = xQueueCreate(QUEUE_LENGTH, sizeof(MSGQUEUE_COLOR_t));
     if (mid_Queue_COLOR == NULL) {
-        xil_printf("Error al crear la cola COLOR\r\n");
+        xil_printf("Error al crear la cola de COLOR\r\n");
         return -1;
     }
 
-    tid_COLOR = xTaskCreate(COLORTask, "COLOR_Task", 256, NULL, tskIDLE_PRIORITY + 2, &xColorTask);
-    if (tid_COLOR != pdPASS) {
-        xil_printf("Error al crear la tarea COLOR\r\n");
+    BaseType_t tid_color = xTaskCreate(ColorTask, "Color_Task", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, &xColorTask);
+    if (tid_color != pdPASS) {
+        xil_printf("Error al crear la tarea Color_Task\r\n");
         return -1;
     }
+
     return 0;
 }
 
-/* Tarea principal del módulo COLOR */
-void COLORTask(void *pvParameters) {
-    COLOR_Begin(&COLOR, XPAR_PMODCOLOR_0_AXI_LITE_IIC_BASEADDR, XPAR_PMODCOLOR_0_AXI_LITE_GPIO_BASEADDR, 0x29);
-    COLOR_SetENABLE(&COLOR, COLOR_REG_ENABLE_PON_MASK);
-    usleep(2400);
-    COLOR_SetENABLE(&COLOR, COLOR_REG_ENABLE_PON_MASK | COLOR_REG_ENABLE_RGBC_INIT_MASK);
-    usleep(2400);
+static void Color_Initialize() {
+    COLOR_Begin(&myColorDevice, XPAR_PMODCOLOR_0_AXI_LITE_IIC_BASEADDR, XPAR_PMODCOLOR_0_AXI_LITE_GPIO_BASEADDR, 0x29);
 
-    colorData = COLOR_GetData(&COLOR);
-    calib = COLOR_InitCalibrationData(colorData);
+    COLOR_SetLED(&myColorDevice, 0);
+
+    COLOR_SetENABLE(&myColorDevice, 0x03);
+
+    // Tiempo de integración
+    {
+        u8 atime = ATIME_600MS;
+        COLOR_WriteIIC(&myColorDevice, COLOR_RegATIME, &atime, 1);
+    }
+
+    // Ganancia 60x
+    {
+        u8 control = GAIN_60X;
+        COLOR_WriteIIC(&myColorDevice, COLOR_RegCONTROL, &control, 1);
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(700));
+}
+
+void ColorTask(void *pvParameters) {
+    Color_Initialize();
+    COLOR_Data data = COLOR_GetData(&myColorDevice);
+    COLOR_SetLED(&myColorDevice, 0);
+
+    static uint8_t prevMajorityColor = 0xFF; // 0xFF indica que no hay color previo aún
 
     while (1) {
-        colorData = COLOR_GetData(&COLOR);
-        COLOR_Calibrate(colorData, &calib);
-        colorData = COLOR_NormalizeToCalibration(colorData, calib);
+        // Esperar notificación antes de medir
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        if (xQueueSend(mid_Queue_COLOR, &colorData, portMAX_DELAY) != pdPASS) {
-            xil_printf("Error al enviar el valor a la cola COLOR\r\n");
+        COLOR_SetLED(&myColorDevice, 1);
+        // Esperar el tiempo de integración (~700 ms)
+        vTaskDelay(pdMS_TO_TICKS(700));
+
+        data = COLOR_GetData(&myColorDevice);
+        COLOR_SetLED(&myColorDevice, 0);
+
+        color.r = (data.r * 255) / 65535; // Convertir a [0,255]
+        color.g = (data.g * 255) / 65535;
+        color.b = (data.b * 255) / 65535;
+
+        // Determinar color mayoritario
+        char majorityColor = 0; // 'R', 'G', 'B', o 0 si no hay mayoritario claro
+        if (color.r > color.g && color.r > color.b) {
+            majorityColor = 'R';
+        } else if (color.g > color.r && color.g > color.b) {
+            majorityColor = 'G';
+        } else if (color.b > color.r && color.b > color.g) {
+            majorityColor = 'B';
         }
 
-        xil_printf("R=%03d G=%03d B=%03d\r\n", colorData.r, colorData.g, colorData.b);
-        vTaskDelay(pdMS_TO_TICKS(4000));
+        // Si hay un mayoritario claro y es distinto al anterior
+        if (majorityColor != 0 && majorityColor != prevMajorityColor) {
+            // Enviar a la cola solo si cambió el mayoritario
+            if (xQueueSend(mid_Queue_COLOR, &color, portMAX_DELAY) != pdPASS) {
+                xil_printf("Error al enviar color a la cola\r\n");
+                xQueueReset(mid_Queue_COLOR);
+            }
+            prevMajorityColor = (uint8_t)majorityColor;
+        }
+
+        // Si no cambió el mayoritario o no hubo mayoritario claro, no se envía nada.
+        // La tarea quedará esperando la próxima notificación para volver a medir.
+        taskYIELD();
     }
-}
-
-/* Funciones de calibración */
-CalibrationData COLOR_InitCalibrationData(COLOR_Data firstSample) {
-    CalibrationData calib;
-    calib.min = firstSample;
-    calib.max = firstSample;
-    return calib;
-}
-
-void COLOR_Calibrate(COLOR_Data newSample, CalibrationData *calib) {
-    if (newSample.c < calib->min.c) calib->min.c = newSample.c;
-    if (newSample.r < calib->min.r) calib->min.r = newSample.r;
-    if (newSample.g < calib->min.g) calib->min.g = newSample.g;
-    if (newSample.b < calib->min.b) calib->min.b = newSample.b;
-
-    if (newSample.c > calib->max.c) calib->max.c = newSample.c;
-    if (newSample.r > calib->max.r) calib->max.r = newSample.r;
-    if (newSample.g > calib->max.g) calib->max.g = newSample.g;
-    if (newSample.b > calib->max.b) calib->max.b = newSample.b;
-}
-
-COLOR_Data COLOR_NormalizeToCalibration(COLOR_Data sample, CalibrationData calib) {
-    COLOR_Data norm;
-    norm.c = (sample.c - calib.min.c) * (255.0 / (calib.max.c - calib.min.c));
-    norm.r = (sample.r - calib.min.r) * (255.0 / (calib.max.r - calib.min.r));
-    norm.g = (sample.g - calib.min.g) * (255.0 / (calib.max.g - calib.min.g));
-    norm.b = (sample.b - calib.min.b) * (255.0 / (calib.max.b - calib.min.b));
-    return norm;
 }

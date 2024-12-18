@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
- *      Módulo Principal: Tarea que se encarga de coordinar todas las demás.
- *      Es el módulo que decide las acciones a tomar en función del estado del
- *      sistema y de la información que reciba del resto de los módulos.
+ *      Modulo Principal: Tarea que se encarga de coordinar todas las demas.
+ *      Es el modulo que decide las acciones a tomar en funcion del estado del
+ *      sistema y de la informacion que reciba del resto de los modulos.
  *-----------------------------------------------------------------------------*/
 
 #include "Principal.h"
@@ -54,6 +54,9 @@ void PrincipalTask(void *pvParameters) {
     uint8_t position = 50;
     uint8_t enabled = 0;
     uint16_t aux_sw = 0;
+    uint8_t lx = 0;
+    vTaskSuspend(xLightTask);
+    //vTaskSuspend(xColorTask);
 
     while (1) {
 
@@ -78,6 +81,7 @@ void PrincipalTask(void *pvParameters) {
                 if (aux_sw == SW0) {
                     state = COLOR;
                     aux_sw = 0;
+                    vTaskResume(xColorTask);
                 }
                 if (aux_sw == SW3) {
                     state = MODO3;
@@ -90,11 +94,18 @@ void PrincipalTask(void *pvParameters) {
                     snprintf(bluetx.string, sizeof(bluetx.string), "%u\r\n", als.light);
                     xQueueSend(mid_Queue_TX_Blue, &bluetx, portMAX_DELAY);
                 }
-                *(PWM_REG + 0) = ((als.light * 100) / 255);
+                lx = ((als.light * 100) / 255);
+                if (lx < 10) {
+                    lx = 10;
+                } else if (lx > 90) {
+                    lx = 90;
+                }
+                *(PWM_REG + 0) = lx;
 
                 if (aux_sw == SW0) {
                     state = COLOR;
                     aux_sw = 0;
+                    vTaskResume(xColorTask);
                 }
                 if (aux_sw == SW3) {
                     state = MODO3;
@@ -116,23 +127,26 @@ void PrincipalTask(void *pvParameters) {
                 if (aux_sw == SW0) {
                     state = COLOR;
                     aux_sw = 0;
+                    vTaskResume(xColorTask);
                 }
                 break;
 
             case COLOR:  // ELECCION MODO
-                if (xQueueReceive(mid_Queue_COLOR, &color, 0) == pdTRUE) {
-
-                    if (color.r > color.g && color.r > color.b) {  // Rojo predominante
+            	aux_sw = 0;
+            	xTaskNotifyGive(xColorTask);
+                if (xQueueReceive(mid_Queue_COLOR, &color, portMAX_DELAY) == pdTRUE) {
+                	xil_printf("R=%03d G=%03d B=%03d\r\n", color.r, color.g, color.b);
+                    if (color.r > color.g && color.r > color.b) {//R
                         state = MODO1;
-                        xil_printf("ROJO detectado: Cambio a MODO1\r\n");
-                    } else if (color.g > color.r && color.g > color.b) {  // Verde predominante
+                        vTaskSuspend(xLightTask);
+                    } else if (color.g > color.r && color.g > color.b) {//G
                         state = MODO2;
-                        xil_printf("VERDE detectado: Cambio a MODO2\r\n");
-                    } else if (color.b > color.r && color.b > color.g) {  // Azul predominante
+                        vTaskResume(xLightTask);
+                        *(PWM_REG + 4) = 1;//habilito por si salgo inhabilitado de modo1 o modo3
+                    } else if (color.b > color.r && color.b > color.g) {//B
                         state = MODO3;
-                        xil_printf("AZUL detectado: Cambio a MODO3\r\n");
+                        vTaskSuspend(xLightTask);
                     }
-                    *(PWM_REG + 4) = 1;  // Habilitar PWM antes de salir del estado COLOR
                 }
                 break;
 

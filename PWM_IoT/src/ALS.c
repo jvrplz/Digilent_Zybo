@@ -33,7 +33,7 @@ int Init_ALS(void){
         return -1;
     }
 
-    tid_ALS = xTaskCreate(ALSTask, "ALS_Task", 128, NULL, tskIDLE_PRIORITY + 2, &xLightTask);
+    tid_ALS = xTaskCreate(ALSTask, "ALS_Task", 128, NULL, tskIDLE_PRIORITY + 3, &xLightTask);
 	if(tid_ALS != pdPASS){
 		return -1;
 	}
@@ -45,7 +45,7 @@ void ALSTask(void *pvParameters) {
 	ALS_begin(&ALS, XPAR_PMODALS_0_AXI_LITE_SPI_BASEADDR);
 	vTaskDelay(pdMS_TO_TICKS(100));
 	als.light = ALS_read(&ALS);
-	ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+	//ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
     while (1) {
         als.light = ALS_read(&ALS);

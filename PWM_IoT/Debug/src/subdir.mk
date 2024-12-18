@@ -9,6 +9,7 @@ LD_SRCS += \
 C_SRCS += \
 ../src/ALS.c \
 ../src/Bluetooth.c \
+../src/Color.c \
 ../src/Principal.c \
 ../src/main.c \
 ../src/sw.c 
@@ -16,6 +17,7 @@ C_SRCS += \
 OBJS += \
 ./src/ALS.o \
 ./src/Bluetooth.o \
+./src/Color.o \
 ./src/Principal.o \
 ./src/main.o \
 ./src/sw.o 
@@ -23,6 +25,7 @@ OBJS += \
 C_DEPS += \
 ./src/ALS.d \
 ./src/Bluetooth.d \
+./src/Color.d \
 ./src/Principal.d \
 ./src/main.d \
 ./src/sw.d 
